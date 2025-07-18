@@ -1,0 +1,2 @@
+export declare function Log(stack: "backend" | "frontend", level: "debug" | "info" | "warn" | "error" | "fatal", pkg: "cache" | "controller" | "cron_job" | "db" | "domain" | "handler" | "repository" | "route" | "service" | "auth" | "config" | "middleware" | "utils" | "api" | "component" | "hook" | "page" | "state" | "style", message: string): Promise<void>;
+//# sourceMappingURL=logger.d.ts.map
