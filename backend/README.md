@@ -265,15 +265,180 @@ backend/
 └── package.json
 ```
 
-## Testing
+## Testing with Postman
 
-To test the API endpoints, you can use curl or any HTTP client:
+### Base URL
+```
+http://localhost:3000
+```
+
+### 1. Create Short URL
+
+**Method:** `POST`
+**URL:** `http://localhost:3000/api/shorten`
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Request Body Examples:**
+
+**Basic URL shortening:**
+```json
+{
+  "url": "https://www.google.com"
+}
+```
+
+**With custom short code:**
+```json
+{
+  "url": "https://www.github.com",
+  "customCode": "github"
+}
+```
+
+**With custom validity (60 minutes):**
+```json
+{
+  "url": "https://www.stackoverflow.com",
+  "validityMinutes": 60
+}
+```
+
+**Complete example with all parameters:**
+```json
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "customCode": "rickroll",
+  "validityMinutes": 120
+}
+```
+
+**Expected Response (201):**
+```json
+{
+  "success": true,
+  "shortUrl": "http://localhost:3000/abc123",
+  "originalUrl": "https://www.google.com",
+  "shortCode": "abc123",
+  "expiresAt": "2024-01-01T12:30:00.000Z"
+}
+```
+
+### 2. Redirect to Original URL
+
+**Method:** `GET`
+**URL:** `http://localhost:3000/{shortCode}`
+**Example:** `http://localhost:3000/abc123`
+
+**No request body required**
+
+**Expected Response:** 302 Redirect to original URL
+
+### 3. Get URL Statistics
+
+**Method:** `GET`
+**URL:** `http://localhost:3000/api/stats/{shortCode}`
+**Example:** `http://localhost:3000/api/stats/abc123`
+
+**No request body required**
+
+**Expected Response (200):**
+```json
+{
+  "success": true,
+  "shortCode": "abc123",
+  "originalUrl": "https://www.google.com",
+  "createdAt": "2024-01-01T12:00:00.000Z",
+  "expiresAt": "2024-01-01T12:30:00.000Z",
+  "accessCount": 5,
+  "lastAccessed": "2024-01-01T12:15:00.000Z",
+  "isActive": true
+}
+```
+
+### 4. Health Check
+
+**Method:** `GET`
+**URL:** `http://localhost:3000/health` or `http://localhost:3000/api/health`
+
+**No request body required**
+
+**Expected Response (200):**
+```json
+{
+  "success": true,
+  "message": "URL Shortener service is healthy",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "version": "1.0.0"
+}
+```
+
+### Testing Scenarios
+
+#### Test Case 1: Valid URL Shortening
+```json
+POST http://localhost:3000/api/shorten
+{
+  "url": "https://www.example.com"
+}
+```
+
+#### Test Case 2: Invalid URL Format
+```json
+POST http://localhost:3000/api/shorten
+{
+  "url": "not-a-valid-url"
+}
+```
+**Expected:** 400 Bad Request with validation error
+
+#### Test Case 3: Missing URL
+```json
+POST http://localhost:3000/api/shorten
+{
+  "customCode": "test"
+}
+```
+**Expected:** 400 Bad Request with "URL is required" error
+
+#### Test Case 4: Custom Code Already Exists
+```json
+POST http://localhost:3000/api/shorten
+{
+  "url": "https://www.example.com",
+  "customCode": "existing-code"
+}
+```
+**Expected:** 409 Conflict if code already exists
+
+#### Test Case 5: Invalid Validity Period
+```json
+POST http://localhost:3000/api/shorten
+{
+  "url": "https://www.example.com",
+  "validityMinutes": 0
+}
+```
+**Expected:** 400 Bad Request with validation error
+
+#### Test Case 6: Rate Limiting Test
+Make 11 consecutive POST requests to `/api/shorten` within 5 minutes
+**Expected:** 429 Too Many Requests on the 11th request
+
+### cURL Commands for Quick Testing
 
 ```bash
 # Create a short URL
 curl -X POST http://localhost:3000/api/shorten \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com"}'
+
+# Create with custom code
+curl -X POST http://localhost:3000/api/shorten \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://github.com", "customCode": "github"}'
 
 # Access the short URL (replace abc123 with actual code)
 curl -L http://localhost:3000/abc123
@@ -284,3 +449,33 @@ curl http://localhost:3000/api/stats/abc123
 # Health check
 curl http://localhost:3000/health
 ```
+
+### 📥 Postman Collection
+
+A complete Postman collection is available in the root directory:
+- **File:** `../URL_Shortener_Postman_Collection.json`
+- **Import:** Open Postman → Import → Select the JSON file
+- **Features:** Pre-configured requests, test scripts, and error handling tests
+
+### Quick Start Testing
+
+1. **Start the server:**
+   ```bash
+   npm run dev
+   ```
+
+2. **Test health endpoint:**
+   ```bash
+   curl http://localhost:3000/health
+   ```
+
+3. **Create your first short URL:**
+   ```bash
+   curl -X POST http://localhost:3000/api/shorten \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://example.com"}'
+   ```
+
+4. **Use the returned shortCode to test redirect and stats**
+
+For comprehensive testing documentation, see the main [README.md](../README.md) file.

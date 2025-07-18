@@ -1,0 +1,320 @@
+{
+  "info": {
+    "name": "URL Shortener API",
+    "description": "Complete API collection for testing the URL Shortener microservice",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "shortCode",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "host": ["http://localhost:3000"],
+          "path": ["health"]
+        },
+        "description": "Check if the service is running and healthy"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Short URL - Basic",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Response has shortCode\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('shortCode');",
+              "    pm.collectionVariables.set(\"shortCode\", jsonData.shortCode);",
+              "});",
+              "",
+              "pm.test(\"Response structure is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('success', true);",
+              "    pm.expect(jsonData).to.have.property('shortUrl');",
+              "    pm.expect(jsonData).to.have.property('originalUrl');",
+              "    pm.expect(jsonData).to.have.property('expiresAt');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://www.google.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/shorten",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "shorten"]
+        },
+        "description": "Create a short URL with just the basic URL parameter"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Short URL - With Custom Code",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://www.github.com\",\n  \"customCode\": \"github\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/shorten",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "shorten"]
+        },
+        "description": "Create a short URL with a custom short code"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Short URL - With Validity",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://www.stackoverflow.com\",\n  \"validityMinutes\": 60\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/shorten",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "shorten"]
+        },
+        "description": "Create a short URL with custom validity period (60 minutes)"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Short URL - Complete Example",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\n  \"customCode\": \"rickroll\",\n  \"validityMinutes\": 120\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/shorten",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "shorten"]
+        },
+        "description": "Create a short URL with all parameters: URL, custom code, and validity"
+      },
+      "response": []
+    },
+    {
+      "name": "Get URL Statistics",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response structure is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('success', true);",
+              "    pm.expect(jsonData).to.have.property('shortCode');",
+              "    pm.expect(jsonData).to.have.property('originalUrl');",
+              "    pm.expect(jsonData).to.have.property('accessCount');",
+              "    pm.expect(jsonData).to.have.property('isActive');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/stats/{{shortCode}}",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "stats", "{{shortCode}}"]
+        },
+        "description": "Get statistics for a shortened URL using the shortCode from previous requests"
+      },
+      "response": []
+    },
+    {
+      "name": "Redirect to Original URL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/{{shortCode}}",
+          "host": ["http://localhost:3000"],
+          "path": ["{{shortCode}}"]
+        },
+        "description": "Access the short URL to redirect to the original URL. This will increment the access count."
+      },
+      "response": []
+    },
+    {
+      "name": "Error Test - Invalid URL",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error response structure\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('success', false);",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "    pm.expect(jsonData).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"not-a-valid-url\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/shorten",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "shorten"]
+        },
+        "description": "Test error handling with an invalid URL format"
+      },
+      "response": []
+    },
+    {
+      "name": "Error Test - Missing URL",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message for missing URL\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include('URL is required');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customCode\": \"test\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/shorten",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "shorten"]
+        },
+        "description": "Test error handling when URL parameter is missing"
+      },
+      "response": []
+    },
+    {
+      "name": "Error Test - Non-existent Short Code",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Error message for not found\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include('not found');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/stats/nonexistent",
+          "host": ["http://localhost:3000"],
+          "path": ["api", "stats", "nonexistent"]
+        },
+        "description": "Test error handling when requesting stats for a non-existent short code"
+      },
+      "response": []
+    }
+  ]
+}

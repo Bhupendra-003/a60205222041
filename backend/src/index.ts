@@ -2,7 +2,7 @@ import { App } from './app';
 import { Log } from './logging_middleware/logger';
 
 // Environment configuration
-const PORT = parseInt(process.env.PORT || '3000', 10);
+const PORT = parseInt(process.env.PORT || '3001', 10);
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Set base URL for short links

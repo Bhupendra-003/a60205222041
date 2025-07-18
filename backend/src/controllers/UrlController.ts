@@ -153,28 +153,4 @@ export class UrlController {
     }
   };
 
-  /**
-   * Health check endpoint
-   * GET /api/health
-   */
-  public healthCheck = async (req: Request, res: Response): Promise<void> => {
-    try {
-      Log('backend', 'debug', 'controller', 'Health check requested');
-      
-      res.status(200).json({
-        success: true,
-        message: 'URL Shortener service is healthy',
-        timestamp: new Date().toISOString(),
-        version: '1.0.0'
-      });
-    } catch (error) {
-      Log('backend', 'error', 'controller', `Health check failed: ${error}`);
-      
-      res.status(500).json({
-        success: false,
-        error: 'HEALTH_CHECK_FAILED',
-        message: 'Service is unhealthy'
-      });
-    }
-  };
 }

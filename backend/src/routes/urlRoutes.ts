@@ -12,7 +12,6 @@ router.use(rateLimiter);
 // API routes
 router.post('/shorturls', createUrlRateLimiter, validateCreateUrlRequest, urlController.createShortUrl);
 router.get('/shorturls/:shortCode', urlController.getUrlStats);
-router.get('/api/health', urlController.healthCheck);
 
 // Redirect route (should be last to avoid conflicts)
 router.get('/:shortCode', urlController.redirectToOriginalUrl);
