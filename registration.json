@@ -1,0 +1,15 @@
+[
+  {
+    "email": "bhupendra.raj003@gmail.com",
+    "name": "bhupendra singh rajput",
+    "rollNo": "a60205222041",
+    "accessCode": "JpzerQ",
+    "clientID": "ff53e690-e80b-4a86-b95e-3dfaa0701c8f",
+    "clientSecret": "gNxydtUfYkUGeHMY"
+  },
+  {
+    "token_type": "Bearer",
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiYXVkIjoiaHR0cDovLzIwLjI0NC41Ni4xNDQvZXZhbHVhdGlvbi1zZXJ2aWNlIiwiZW1haWwiOiJiaHVwZW5kcmEucmFqMDAzQGdtYWlsLmNvbSIsImV4cCI6MTc1MjgxODYxNywiaWF0IjoxNzUyODE3NzE3LCJpc3MiOiJBZmZvcmQgTWVkaWNhbCBUZWNobm9sb2dpZXMgUHJpdmF0ZSBMaW1pdGVkIiwianRpIjoiMTc1NDQ3MDktZjBhYi00ODE3LWEwMzgtMDBjYjlkODIyMTg5IiwibG9jYWxlIjoiZW4tSU4iLCJuYW1lIjoiYmh1cGVuZHJhIHNpbmdoIHJhanB1dCIsInN1YiI6ImZmNTNlNjkwLWU4MGItNGE4Ni1iOTVlLTNkZmFhMDcwMWM4ZiJ9LCJlbWFpbCI6ImJodXBlbmRyYS5yYWowMDNAZ21haWwuY29tIiwibmFtZSI6ImJodXBlbmRyYSBzaW5naCByYWpwdXQiLCJyb2xsTm8iOiJhNjAyMDUyMjIwNDEiLCJhY2Nlc3NDb2RlIjoiSnB6ZXJRIiwiY2xpZW50SUQiOiJmZjUzZTY5MC1lODBiLTRhODYtYjk1ZS0zZGZhYTA3MDFjOGYiLCJjbGllbnRTZWNyZXQiOiJnTnh5ZHRVZllrVUdlSE1ZIn0.ngIMBhBGSAnhz4rcxCFaF_jIKT7QDSuMPy5rEmCX_x8",
+    "expires_in": 1752818617
+  }
+]
