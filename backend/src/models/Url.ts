@@ -15,6 +15,8 @@ export interface UrlAnalytics {
   accessed_at?: string;
   ip_address?: string;
   user_agent?: string;
+  referrer?: string;
+  location?: string;
 }
 
 export interface CreateUrlRequest {

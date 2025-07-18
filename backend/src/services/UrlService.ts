@@ -1,7 +1,8 @@
 import { Database } from '../config/database';
-import { Url, UrlAnalytics, CreateUrlRequest, CreateUrlResponse, UrlStatsResponse } from '../models/Url';
+import { Url, UrlAnalytics, CreateUrlRequest, CreateUrlResponse, UrlStatsResponse, ClickData } from '../models/Url';
 import { ShortCodeGenerator } from '../utils/shortCodeGenerator';
 import { UrlValidator } from '../utils/urlValidator';
+import { GeoLocationService } from '../utils/geoLocation';
 import { Log } from '../logging_middleware/logger';
 
 export class UrlService {
@@ -25,7 +26,7 @@ export class UrlService {
       }
 
       // Validate validity period
-      const validityValidation = UrlValidator.validateValidityMinutes(request.validityMinutes);
+      const validityValidation = UrlValidator.validateValidityMinutes(request.validity);
       if (!validityValidation.isValid) {
         throw new Error(validityValidation.error);
       }
@@ -33,7 +34,7 @@ export class UrlService {
       // Generate unique short code
       const shortCode = await ShortCodeGenerator.generateUniqueCode(
         this.checkShortCodeUniqueness.bind(this),
-        request.customCode
+        request.shortcode
       );
 
       // Calculate expiry date
@@ -53,11 +54,8 @@ export class UrlService {
       Log('backend', 'info', 'service', `Short URL created successfully: ${shortCode}`);
 
       return {
-        success: true,
-        shortUrl: `${process.env.BASE_URL || 'http://localhost:3000'}/${shortCode}`,
-        originalUrl: url.original_url,
-        shortCode: shortCode,
-        expiresAt: expiryDate.toISOString()
+        shortLink: `${process.env.BASE_URL || 'http://localhost:3000'}/${shortCode}`,
+        expiry: expiryDate.toISOString()
       };
     } catch (error) {
       Log('backend', 'error', 'service', `Failed to create short URL: ${error}`);
@@ -68,7 +66,7 @@ export class UrlService {
   /**
    * Get original URL by short code and handle redirection
    */
-  public async getOriginalUrl(shortCode: string, clientInfo?: { ip?: string; userAgent?: string }): Promise<string> {
+  public async getOriginalUrl(shortCode: string, clientInfo?: { ip?: string; userAgent?: string; referrer?: string }): Promise<string> {
     try {
       Log('backend', 'info', 'service', `Retrieving original URL for: ${shortCode}`);
 
@@ -102,7 +100,7 @@ export class UrlService {
   }
 
   /**
-   * Get URL statistics
+   * Get URL statistics with detailed click data
    */
   public async getUrlStats(shortCode: string): Promise<UrlStatsResponse> {
     try {
@@ -113,15 +111,16 @@ export class UrlService {
         throw new Error('Short URL not found');
       }
 
+      // Get detailed click data
+      const clickData = await this.getClickData(shortCode);
+
       return {
-        success: true,
         shortCode: url.short_code,
         originalUrl: url.original_url,
         createdAt: url.created_at!,
         expiresAt: url.expires_at,
-        accessCount: url.access_count || 0,
-        lastAccessed: url.last_accessed || null,
-        isActive: url.is_active || false
+        totalClicks: url.access_count || 0,
+        clickData: clickData
       };
     } catch (error) {
       Log('backend', 'error', 'service', `Failed to retrieve stats for ${shortCode}: ${error}`);
@@ -179,11 +178,19 @@ export class UrlService {
   /**
    * Record URL access for analytics
    */
-  private async recordAccess(shortCode: string, clientInfo?: { ip?: string; userAgent?: string }): Promise<void> {
+  private async recordAccess(shortCode: string, clientInfo?: { ip?: string; userAgent?: string; referrer?: string }): Promise<void> {
     try {
+      const location = GeoLocationService.getLocationFromIP(clientInfo?.ip || '');
+
       await this.db.run(
-        `INSERT INTO analytics (short_code, ip_address, user_agent) VALUES (?, ?, ?)`,
-        [shortCode, clientInfo?.ip || null, clientInfo?.userAgent || null]
+        `INSERT INTO analytics (short_code, ip_address, user_agent, referrer, location) VALUES (?, ?, ?, ?, ?)`,
+        [
+          shortCode,
+          clientInfo?.ip || null,
+          clientInfo?.userAgent || null,
+          clientInfo?.referrer || null,
+          location
+        ]
       );
     } catch (error) {
       Log('backend', 'warn', 'service', `Failed to record analytics: ${error}`);
@@ -204,6 +211,32 @@ export class UrlService {
     } catch (error) {
       Log('backend', 'error', 'service', `Failed to update access info: ${error}`);
       throw error;
+    }
+  }
+
+  /**
+   * Get detailed click data for analytics
+   */
+  private async getClickData(shortCode: string): Promise<ClickData[]> {
+    try {
+      const analytics = await this.db.all(
+        `SELECT accessed_at, referrer, location, ip_address, user_agent
+         FROM analytics
+         WHERE short_code = ?
+         ORDER BY accessed_at DESC`,
+        [shortCode]
+      );
+
+      return analytics.map((record: any) => ({
+        timestamp: record.accessed_at,
+        referrer: record.referrer,
+        location: record.location || 'Unknown',
+        ipAddress: record.ip_address || 'Unknown',
+        userAgent: record.user_agent || 'Unknown'
+      }));
+    } catch (error) {
+      Log('backend', 'error', 'service', `Failed to get click data: ${error}`);
+      return [];
     }
   }
 

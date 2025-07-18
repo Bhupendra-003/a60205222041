@@ -12,13 +12,13 @@ export class UrlController {
 
   /**
    * Create a shortened URL
-   * POST /api/shorten
+   * POST /shorturls
    */
   public createShortUrl = async (req: Request, res: Response): Promise<void> => {
     try {
       Log('backend', 'info', 'controller', `Received URL shortening request from ${req.ip}`);
 
-      const { url, customCode, validityMinutes }: CreateUrlRequest = req.body;
+      const { url, shortcode, validity }: CreateUrlRequest = req.body;
 
       if (!url) {
         const errorResponse: ErrorResponse = {
@@ -33,11 +33,11 @@ export class UrlController {
 
       const result = await this.urlService.createShortUrl({
         url,
-        customCode,
-        validityMinutes
+        shortcode,
+        validity
       });
 
-      Log('backend', 'info', 'controller', `URL shortened successfully: ${result.shortCode}`);
+      Log('backend', 'info', 'controller', `URL shortened successfully`);
       res.status(201).json(result);
     } catch (error) {
       Log('backend', 'error', 'controller', `URL shortening failed: ${error}`);
@@ -84,7 +84,8 @@ export class UrlController {
 
       const clientInfo = {
         ip: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('User-Agent')
+        userAgent: req.get('User-Agent'),
+        referrer: req.get('Referer') || req.get('Referrer')
       };
 
       const originalUrl = await this.urlService.getOriginalUrl(shortCode, clientInfo);
@@ -116,7 +117,7 @@ export class UrlController {
 
   /**
    * Get URL statistics
-   * GET /api/stats/:shortCode
+   * GET /shorturls/:shortCode
    */
   public getUrlStats = async (req: Request, res: Response): Promise<void> => {
     try {

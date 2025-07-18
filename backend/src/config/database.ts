@@ -47,6 +47,8 @@ export class Database {
         accessed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         ip_address TEXT,
         user_agent TEXT,
+        referrer TEXT,
+        location TEXT DEFAULT 'Unknown',
         FOREIGN KEY (short_code) REFERENCES urls (short_code)
       )
     `;

@@ -10,8 +10,8 @@ const urlController = new UrlController();
 router.use(rateLimiter);
 
 // API routes
-router.post('/api/shorten', createUrlRateLimiter, validateCreateUrlRequest, urlController.createShortUrl);
-router.get('/api/stats/:shortCode', urlController.getUrlStats);
+router.post('/shorturls', createUrlRateLimiter, validateCreateUrlRequest, urlController.createShortUrl);
+router.get('/shorturls/:shortCode', urlController.getUrlStats);
 router.get('/api/health', urlController.healthCheck);
 
 // Redirect route (should be last to avoid conflicts)

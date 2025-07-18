@@ -23,21 +23,21 @@ export const validateCreateUrlRequest = [
       }
     }),
   
-  body('customCode')
+  body('shortcode')
     .optional()
     .isLength({ min: 3, max: 20 })
-    .withMessage('Custom code must be between 3 and 20 characters')
+    .withMessage('Shortcode must be between 3 and 20 characters')
     .matches(/^[a-zA-Z0-9]+$/)
-    .withMessage('Custom code can only contain alphanumeric characters')
+    .withMessage('Shortcode can only contain alphanumeric characters')
     .custom((value) => {
-      const reservedWords = ['api', 'admin', 'www', 'app', 'stats', 'analytics', 'health'];
+      const reservedWords = ['api', 'admin', 'www', 'app', 'stats', 'analytics', 'health', 'shorturls'];
       if (reservedWords.includes(value.toLowerCase())) {
-        throw new Error('Custom code cannot be a reserved word');
+        throw new Error('Shortcode cannot be a reserved word');
       }
       return true;
     }),
-  
-  body('validityMinutes')
+
+  body('validity')
     .optional()
     .isInt({ min: 1, max: 525600 })
     .withMessage('Validity must be between 1 and 525600 minutes (1 year)'),
