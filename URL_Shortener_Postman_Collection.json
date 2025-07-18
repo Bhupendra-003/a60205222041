@@ -7,7 +7,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:3000",
+      "value": "http://localhost:3001",
       "type": "string"
     },
     {
@@ -23,8 +23,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/health",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/health",
+          "host": ["http://localhost:3001"],
           "path": ["health"]
         },
         "description": "Check if the service is running and healthy"
@@ -73,8 +73,8 @@
           "raw": "{\n  \"url\": \"https://www.google.com\"\n}"
         },
         "url": {
-          "raw": "http://localhost:3000/api/shorten",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/shorten",
+          "host": ["http://localhost:3001"],
           "path": ["api", "shorten"]
         },
         "description": "Create a short URL with just the basic URL parameter"
@@ -96,8 +96,8 @@
           "raw": "{\n  \"url\": \"https://www.github.com\",\n  \"customCode\": \"github\"\n}"
         },
         "url": {
-          "raw": "http://localhost:3000/api/shorten",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/shorten",
+          "host": ["http://localhost:3001"],
           "path": ["api", "shorten"]
         },
         "description": "Create a short URL with a custom short code"
@@ -119,8 +119,8 @@
           "raw": "{\n  \"url\": \"https://www.stackoverflow.com\",\n  \"validityMinutes\": 60\n}"
         },
         "url": {
-          "raw": "http://localhost:3000/api/shorten",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/shorten",
+          "host": ["http://localhost:3001"],
           "path": ["api", "shorten"]
         },
         "description": "Create a short URL with custom validity period (60 minutes)"
@@ -142,8 +142,8 @@
           "raw": "{\n  \"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\n  \"customCode\": \"rickroll\",\n  \"validityMinutes\": 120\n}"
         },
         "url": {
-          "raw": "http://localhost:3000/api/shorten",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/shorten",
+          "host": ["http://localhost:3001"],
           "path": ["api", "shorten"]
         },
         "description": "Create a short URL with all parameters: URL, custom code, and validity"
@@ -178,8 +178,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/api/stats/{{shortCode}}",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/stats/{{shortCode}}",
+          "host": ["http://localhost:3001"],
           "path": ["api", "stats", "{{shortCode}}"]
         },
         "description": "Get statistics for a shortened URL using the shortCode from previous requests"
@@ -192,8 +192,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/{{shortCode}}",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/{{shortCode}}",
+          "host": ["http://localhost:3001"],
           "path": ["{{shortCode}}"]
         },
         "description": "Access the short URL to redirect to the original URL. This will increment the access count."
@@ -235,8 +235,8 @@
           "raw": "{\n  \"url\": \"not-a-valid-url\"\n}"
         },
         "url": {
-          "raw": "http://localhost:3000/api/shorten",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/shorten",
+          "host": ["http://localhost:3001"],
           "path": ["api", "shorten"]
         },
         "description": "Test error handling with an invalid URL format"
@@ -276,8 +276,8 @@
           "raw": "{\n  \"customCode\": \"test\"\n}"
         },
         "url": {
-          "raw": "http://localhost:3000/api/shorten",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/shorten",
+          "host": ["http://localhost:3001"],
           "path": ["api", "shorten"]
         },
         "description": "Test error handling when URL parameter is missing"
@@ -308,8 +308,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/api/stats/nonexistent",
-          "host": ["http://localhost:3000"],
+          "raw": "http://localhost:3001/api/stats/nonexistent",
+          "host": ["http://localhost:3001"],
           "path": ["api", "stats", "nonexistent"]
         },
         "description": "Test error handling when requesting stats for a non-existent short code"
